@@ -1,9 +1,12 @@
 name: LegendaryDailyShop
-main: com.gyzer.legendary.dailyshop.LegendaryDailyShop
-version: 1.0
-api-version: 1.13
+main: com.legendaryrealms.shop.LegendaryDailyShop
+version: 2.0.1
 depend:
   - Vault
   - PlayerPoints
 commands:
-  lshop:
+  LegendaryDailyShop:
+    aliases:
+      - lshop
+      - shop
+      - lds
