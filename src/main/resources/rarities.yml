@@ -1,0 +1,22 @@
+rarities:
+  #ID
+  #可按格式继续向下添加
+  普通:
+    #名称
+    display: '&f普通奖励'
+    #几率
+    chance: 0.7
+    #每个商店出现该品质的商品最大数量
+    max: 99
+  稀有:
+    display: '&a稀有'
+    chance: 0.3
+    max: 3
+  史诗:
+    display: '&5史诗'
+    chance: 0.05
+    max: 2
+  传说:
+    display: '&4传说'
+    chance: 0.005
+    max: 1

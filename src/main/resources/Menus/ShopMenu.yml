@@ -1,0 +1,62 @@
+title: '%shop%'
+size: 54
+#商品出现的位置  & The slot where the product appears
+#这里设置了多少位置，则该商店每日刷新多少商品 & How many slot are set here, how many products are refreshed by the store every day
+layout: [11,13,15,29,31,33]
+#当该商品位没被随机到商品时展示的物品 & Items displayed when the item is not randomly assigned to the item
+empty:
+  display: '&f[ &e无商品 &f]'
+  material: BARRIER
+  data: 0
+  amount: 1
+  model: 0
+  lore:
+    - ''
+    - '&f该位置每有随机到商品'
+    - '&f你的运气似乎不是很好...'
+#商品的lore模板 %lore%为商品的原lore & The lore template% lore% of the product is the original lore of the product
+items_lore:
+  - '%lore%'
+  - ''
+  - '%placeholder_sellOrBuy%'
+  - '&e价格: &a%price%/个'
+  - ''
+  - '&a左键 &b购买/出售 &d1 &b个'
+  - '&a右键 &b购买/出售 &d16 &b个'
+  - '&aShift+左键 &b购买/出售 &d32 &b个'
+  - '&aShift+右键 &b购买/出售 &d所有 &b个'
+  - ''
+  - '%placeholder_limit%'
+#当你将随机池内某个物品删除但该玩家今日商店内还有该商品时展示的物品
+# The item displayed when you delete an item from the random pool but the player still has the item in the store today
+unknown:
+  display: '&c商品已被下架'
+  material: REDSTONE
+  data: 0
+  amount: 1
+  lore:
+    - ''
+    - '&c该商品已被下架...'
+    - ''
+# 变量 & variable
+placeholder:
+  buy: '&e商品类型: &a购买'
+  sell: '&e商品类型: &a出售'
+  limit: '&e限量: &a%buy%/%max%'
+customItems:
+  refresh:
+    display: '&f[ &a点击刷新 &f]'
+    amount: 1
+    material: APPLE
+    data: 0
+    model: 0
+    lore:
+      - ''
+      - '&f点击刷新 &e当前 &f商店.'
+      - '&f你还有 &a%amount% &f点刷新次数.'
+    slot: [49]
+    fuction:
+      # refresh 刷新按钮 &  Click to refresh the shop's products
+      # null: 点击后不发生任何事情，属于装饰品 &  Nothing happens after clicking, it belongs to decoration
+      # close: 点击后关闭GUI & Click to close GUI
+      type: refresh
