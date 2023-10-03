@@ -23,12 +23,18 @@ public class YamlStore extends DataProvider {
         {
             String shop=shopMap.getKey();
             ShopData shopData=shopMap.getValue();
+
+            yml.set("data."+shop+".items",null);
             yml.set("data."+shop+".items",toStringList(shopData.getItems()));
+
             yml.set("data."+shop+".roll",shopData.getRoll());
+
+            yml.set("data."+shop+".buy",null);
             for (Map.Entry<UUID, Integer> uuid:shopData.getBuy().entrySet()){
                 yml.set("data."+shop+".buy."+uuid.getKey(),uuid.getValue());
 
             }
+            yml.set("data."+shop+".price",null);
             for (Map.Entry<UUID, Double> uuid:shopData.getPrice().entrySet()){
                 yml.set("data."+shop+".price."+uuid.getKey(),uuid.getValue());
             }

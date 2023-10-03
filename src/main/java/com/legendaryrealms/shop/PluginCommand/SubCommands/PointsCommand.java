@@ -44,11 +44,11 @@ public class PointsCommand extends ShopCommand {
          }
          int a=Integer.parseInt(args[3]);
          Player p=Bukkit.getPlayer(player);
-         PlayerData data=PlayerData.getPlayerData(p);
+         PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
          ShopData shopData=data.getShopData(shop)!=null ? data.getShopData(shop) : new ShopData(shop,new ArrayList<>(),new HashMap<>(),new HashMap<>(),0);
          shopData.setRoll(shopData.getRoll()+a);
          data.setShop(shop,shopData);
-         PlayerData.updata(data);
+
          String display=LegendaryDailyShop.getInstance().getShopManager().getShop(shop).getDisplay();
          p.sendMessage(LegendaryDailyShop.getInstance().getConfigManager().plugin+LegendaryDailyShop.getInstance().getConfigManager().points_recive.replace("%amount%",""+a).replace("%shop%",display));
          sender.sendMessage(LegendaryDailyShop.getInstance().getConfigManager().plugin+LegendaryDailyShop.getInstance().getConfigManager().points_give.replace("%player%",player).replace("%amount%",""+a).replace("%shop%",display));

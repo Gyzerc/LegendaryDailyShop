@@ -14,7 +14,7 @@ public class RandomUtils {
 
     public void refreshCheckDate(Player p)
     {
-        PlayerData data=PlayerData.getPlayerData(p);
+        PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
         Calendar calendar=Calendar.getInstance();
         if (data.getDate() != calendar.get(Calendar.DATE)) {
             data.setDate(calendar.get(Calendar.DATE));
@@ -38,13 +38,13 @@ public class RandomUtils {
     }
     public void random(Player p,String shopId)
     {
-        PlayerData data=PlayerData.getPlayerData(p);
+        PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
         ShopData shopData=data.getShopData(shopId) != null ? data.getShopData(shopId) : new ShopData(shopId,new ArrayList<>(),new HashMap<>(),new HashMap<>(),0);
         List<UUID> uuids=RandomUUIDs(shopId);
         shopData.setItems(uuids);
         shopData.setPrice(RandomPrice(shopId,uuids));
+        shopData.setBuy(new HashMap<>());
         data.setShop(shopId,shopData);
-        LegendaryDailyShop.getInstance().getDataProvider().saveData(data);
     }
 
     private Map<UUID,Double> RandomPrice(String shopId,List<UUID> uuids)
@@ -52,11 +52,12 @@ public class RandomUtils {
         Shop shop=LegendaryDailyShop.getInstance().getShopManager().getShop(shopId);
         Map<UUID,Double> map=new HashMap<>();
         uuids.forEach(uuid -> {
+
             double min=(shop.getMin_price().get(uuid) !=null ? shop.getMin_price().get(uuid) : 0.0 ) * 100;
             double max=(shop.getMax_price().get(uuid) !=null ? shop.getMax_price().get(uuid) : 50.0 ) * 100;
             if (max == min)
             {
-                map.put(uuid,min);
+                map.put(uuid,min/100);
             }
             else {
                 double next=(new Random()).nextInt((int) (max-min)) + min;

@@ -16,6 +16,7 @@ empty:
     - '&f你的运气似乎不是很好...'
 #商品的lore模板 %lore%为商品的原lore & The lore template% lore% of the product is the original lore of the product
 items_lore:
+  - '&7商品品质: &e%rarity%'
   - '%lore%'
   - ''
   - '%placeholder_sellOrBuy%'

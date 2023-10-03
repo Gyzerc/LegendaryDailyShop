@@ -3,7 +3,7 @@ package com.legendaryrealms.shop.API;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+ 
 
 public class ShopSellEvent extends Event {
     private Player player;
@@ -35,7 +35,7 @@ public class ShopSellEvent extends Event {
         return amount;
     }
 
-    @NotNull
+    
     public HandlerList getHandlers() {
         return HANDLERS;
     }

@@ -137,7 +137,7 @@ public class Shop {
 
     public boolean canBuy(UUID uuid,Player p,int amount)
     {
-        PlayerData data=PlayerData.getPlayerData(p);
+        PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
         ShopData shopData=data.getShopData(id);
         if (shopData == null)
         {
@@ -175,7 +175,7 @@ public class Shop {
 
     public void dealPrice(UUID uuid,Player p,int amount)
     {
-        PlayerData data=PlayerData.getPlayerData(p);
+        PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
         ShopData shopData=data.getShopData(id);
         if (shopData == null)
         {

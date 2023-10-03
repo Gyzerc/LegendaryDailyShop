@@ -19,7 +19,7 @@ public class JoinEvent implements Listener {
         Player p=e.getPlayer();
         if (LegendaryDailyShop.getInstance().getDataProvider().isExist(p.getName()))
         {
-            PlayerData.getPlayerData(p);
+            LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
             new RandomUtils().refreshCheckDate(p);
             return;
         }

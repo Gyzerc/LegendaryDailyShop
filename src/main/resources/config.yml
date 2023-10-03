@@ -35,6 +35,12 @@ settings:
     #直到不超过下面设定值的轮数中的某轮第五个商品被随机到商品后结束
     #或者到了设定值的轮数仍未有商品则该商品为空
     times: 20
+#设置不同点击出售/收购的数量 -1为所有
+click_amount:
+  left: 1
+  shift_left: 16
+  right: 32
+  shift_right: -1
 message:
   plugin: '&7[&3&lLegendary&b&lDailyShop&7] '
   command_player:

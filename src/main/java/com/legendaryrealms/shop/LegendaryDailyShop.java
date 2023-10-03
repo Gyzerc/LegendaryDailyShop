@@ -10,6 +10,7 @@ import com.legendaryrealms.shop.Events.QuitEvent;
 import com.legendaryrealms.shop.Manager.*;
 import com.legendaryrealms.shop.PluginCommand.PluginCommand;
 import com.legendaryrealms.shop.Utils.MsgUtils;
+import com.legendaryrealms.shop.Utils.ShopPAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ public class LegendaryDailyShop extends JavaPlugin {
     private ShopRarityManager shopRarityManager;
     private ShopManager shopManager;
     private MenusManager menusManager;
+    private PlayerDataManager playerDataManager;
     private Economy eco;
     private PlayerPoints pp;
     private static LegendaryDailyShop legendaryDailyShop;
@@ -50,35 +52,21 @@ public class LegendaryDailyShop extends JavaPlugin {
             this.getPluginLoader().disablePlugin(this);
         }
         setDepend();
-
-
-        if (configManager.Mysql)
-        {
-            dataProvider = new MysqlStore();
-            Bukkit.getConsoleSender().sendMessage("[LegendaryDailyShop] 正在连接 Mysql 数据库.");
-            MysqlManager.setConnectPool();
-        }
-        else {
-            dataProvider = new YamlStore();
-            Bukkit.getConsoleSender().sendMessage("[LegendaryDailyShop] 正在使用 Yaml 存储方式.");
-        }
-
-
-
-
+        setStoreMethod();
+        playerDataManager=new PlayerDataManager();
         new ListenManager();
-
         Bukkit.getPluginCommand("LegendaryDailyShop").setExecutor(new PluginCommand());
         Bukkit.getPluginCommand("LegendaryDailyShop").setTabCompleter(new PluginCommand());
         PluginCommand.registerCommands();
-
         new BukkitRunnable()
         {
             @Override
             public void run() {
-                PlayerData.saveAllToLocal();
+                playerDataManager.saveAll();
             }
         }.runTaskTimerAsynchronously(this,20*configManager.auto_save,20*configManager.auto_save);
+
+
     }
 
     public void setDepend()
@@ -89,9 +77,22 @@ public class LegendaryDailyShop extends JavaPlugin {
 
     }
 
+    public void setStoreMethod(){
+        if (configManager.Mysql)
+        {
+            dataProvider = new MysqlStore();
+            Bukkit.getConsoleSender().sendMessage("[LegendaryDailyShop] 正在连接 Mysql 数据库.");
+            MysqlManager.setConnectPool();
+        }
+        else {
+            dataProvider = new YamlStore();
+            Bukkit.getConsoleSender().sendMessage("[LegendaryDailyShop] 正在使用 Yaml 存储方式.");
+        }
+    }
+
     @Override
     public void onDisable() {
-        PlayerData.saveAllToLocal();
+        playerDataManager.saveAll();
     }
 
     public void reload()
@@ -107,6 +108,10 @@ public class LegendaryDailyShop extends JavaPlugin {
 
         menusManager=new MenusManager();
         menusManager.reload();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
+            new ShopPAPI().register();
+        }
     }
 
     public DataProvider getDataProvider() {return dataProvider;}
@@ -116,6 +121,7 @@ public class LegendaryDailyShop extends JavaPlugin {
     public MenusManager getMenusManager(){return menusManager;}
     public Economy getEco(){return eco;}
     public PlayerPoints getPlayerPointsAPI(){return pp;}
+    public PlayerDataManager getPlayerDataManager(){return playerDataManager;}
 
     public static LegendaryDailyShop getInstance() {return legendaryDailyShop;}
     public boolean BukkitVersionHigh()
@@ -126,9 +132,4 @@ public class LegendaryDailyShop extends JavaPlugin {
         return version >=13;
     }
 
-    public double getJavaVersion()
-    {
-       double version=Double.parseDouble(System.getProperty("java.specification.version"));
-       return version;
-    }
 }

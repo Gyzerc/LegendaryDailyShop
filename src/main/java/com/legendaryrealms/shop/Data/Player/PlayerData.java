@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class PlayerData {
-
-    private static HashMap<String,PlayerData> cache=new HashMap<>();
     private Map<String, ShopData> data;
     private String p;
     private int date;
@@ -20,7 +18,6 @@ public class PlayerData {
         this.p = p;
         this.date = date;
         this.tip = tip;
-        cache.put(p,this);
     }
 
     public Map<String, ShopData> getData() {
@@ -61,39 +58,11 @@ public class PlayerData {
         this.tip = tip;
     }
 
-    public static PlayerData getPlayerData(Player p)
-    {
-        if (cache.containsKey(p.getName()))
-        {
-            return cache.get(p.getName());
-        }
-        PlayerData playerData=LegendaryDailyShop.getInstance().getDataProvider().loadData(p.getName());
-        cache.put(p.getName(),playerData);
-        return playerData;
-    }
-
-    public static void updata(PlayerData data)
-    {
-        cache.put(data.p,data);
-    }
-
 
     public void setShop(String shopId,ShopData shopData)
     {
         data.put(shopId,shopData);
     }
 
-    public static void saveAllToLocal()
-    {
-        if (cache.isEmpty())
-        {
-            return;
-        }
-        for (String player:cache.keySet())
-        {
-            PlayerData data=LegendaryDailyShop.getInstance().getDataProvider().loadData(player);
-            LegendaryDailyShop.getInstance().getDataProvider().saveData(data);
-        }
-    }
 
 }

@@ -12,7 +12,6 @@ public class QuitEvent implements Listener {
     public void onQuit(PlayerQuitEvent e)
     {
         Player p=e.getPlayer();
-        PlayerData data=PlayerData.getPlayerData(p);
-        LegendaryDailyShop.getInstance().getDataProvider().saveData(data);
+        LegendaryDailyShop.getInstance().getPlayerDataManager().saveAndRemve(p.getName());
     }
 }

@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class DeleteMenu implements InventoryHolder {
     }
 
     @Override
-    public @NotNull Inventory getInventory() {
+    public  Inventory getInventory() {
         return inv;
     }
     public void dealEvent(InventoryClickEvent e)

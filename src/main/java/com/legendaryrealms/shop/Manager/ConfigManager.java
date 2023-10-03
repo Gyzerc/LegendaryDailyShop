@@ -41,7 +41,10 @@ public class ConfigManager {
     public int auto_save;
     public String noplayer;
     public String notonline;
-
+    public int click_left_amount;
+    public int click_shift_left_amount;
+    public int click_right_amount;
+    public int click_shift_right_amount;
     public ConfigManager()
     {
         File file=new File("./plugins/LegendaryDailyShop","config.yml");
@@ -87,6 +90,10 @@ public class ConfigManager {
         noplayer = MsgUtils.msg(yml.getString("message.noplayer","&c该玩家不存在！"));
         notonline = MsgUtils.msg(yml.getString("message.notonline","&c该玩家不在你当前的区服或者不在线！"));
 
+        click_left_amount = yml.getInt("click_amount.left",1);
+        click_shift_left_amount = yml.getInt("click_amount.shift_left",32);
+        click_right_amount = yml.getInt("click_amount.right",16);
+        click_shift_right_amount = yml.getInt("click_amount.shift_right",-1);
     }
 
 

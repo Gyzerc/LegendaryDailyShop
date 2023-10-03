@@ -9,6 +9,7 @@ import com.legendaryrealms.shop.Menu.MenuConfiguration;
 import com.legendaryrealms.shop.Shop.ProductType;
 import com.legendaryrealms.shop.Shop.Shop;
 import com.legendaryrealms.shop.Shop.ShopCurrency;
+import com.legendaryrealms.shop.Shop.ShopRarity;
 import com.legendaryrealms.shop.Utils.ItemUtils;
 import com.legendaryrealms.shop.Utils.RandomUtils;
 import org.bukkit.Bukkit;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class ShopMenu implements InventoryHolder {
     public void loadMenu()
     {
 
-        PlayerData data=PlayerData.getPlayerData(p);
+        PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
         ShopData shopData=data.getShopData(shopId);
         for (String key:read.getKeys())
         {
@@ -75,19 +75,29 @@ public class ShopMenu implements InventoryHolder {
             for (UUID uuid : shopData.getItems()) {
                 if (shop.getItems().get(uuid) == null)
                 {
-                    inv.setItem(read.getLayout().get(a),read.getUnknown());
-                    fuction.put(read.getLayout().get(a),"null");
-                    a++;
-                    continue;
+                    if (a < read.getLayout().size()) {
+                        inv.setItem(read.getLayout().get(a), read.getUnknown());
+                        fuction.put(read.getLayout().get(a), "null");
+                        a++;
+                        continue;
+                    }
                 }
                 ItemStack i = shop.getItems().get(uuid).clone();
                 ItemMeta id=i.getItemMeta();
                 List<String> oldlore=id.hasLore() ? id.getLore() : new ArrayList<>();
                 List<String> format=new ArrayList<>(read.getLore_format());
                 ArrayList lore=new ArrayList();
+
+                String rarity=shop.getRarity().get(uuid);
+                String rarityDisplay="Unknown";
+                if (rarity != null) {
+                    ShopRarity shopRarity = LegendaryDailyShop.getInstance().getShopRarityManager().getRarity(rarity);
+                    rarityDisplay=shopRarity.getDisplay();
+                }
+
                 for (String l:format)
                 {
-                    l=l.replace("%price%",""+shopData.getPrice().get(uuid));
+                    l=l.replace("%price%",""+shopData.getPrice().get(uuid)).replace("%rarity%",rarityDisplay);
                     switch (l) {
                         case "%lore%":
                             lore.addAll(oldlore);
@@ -127,11 +137,12 @@ public class ShopMenu implements InventoryHolder {
             }
         }
         else {
-
             for (int a=0;a<read.getLayout().size();a++)
             {
-                inv.setItem(read.getLayout().get(a),read.getEmpty());
-                fuction.put(read.getLayout().get(a),"null");
+                if (a < read.getLayout().size()) {
+                    inv.setItem(read.getLayout().get(a), read.getEmpty());
+                    fuction.put(read.getLayout().get(a), "null");
+                }
             }
         }
     }
@@ -146,7 +157,7 @@ public class ShopMenu implements InventoryHolder {
             switch (fuction)
             {
                 case "refresh":
-                    PlayerData data=PlayerData.getPlayerData(p);
+                    PlayerData data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
                     ShopData shopData=data.getShopData(shopId);
                     if (shopData.getRoll() < 1)
                     {
@@ -156,7 +167,7 @@ public class ShopMenu implements InventoryHolder {
                     int roll=shopData.getRoll()-1;
                     shopData.setRoll(roll);
                     data.setShop(shopId,shopData);
-                    PlayerData.updata(data);
+
                     p.sendMessage(LegendaryDailyShop.getInstance().getConfigManager().plugin+LegendaryDailyShop.getInstance().getConfigManager().random.replace("%amount%",""+roll));
                     new RandomUtils().random(p,shopId);
                     ShopMenu menu = new ShopMenu(p, shopId);
@@ -167,38 +178,42 @@ public class ShopMenu implements InventoryHolder {
                     break;
                 case "items":
                     UUID uuid=uuids.get(e.getRawSlot());
-                    data=PlayerData.getPlayerData(p);
+                    data=LegendaryDailyShop.getInstance().getPlayerDataManager().getData(p.getName());
                     shopData=data.getShopData(shopId);
                     if (uuid != null)
                     {
-                        int amount=1;
+                        int amount=LegendaryDailyShop.getInstance().getConfigManager().click_left_amount;
                         if (e.isLeftClick())
                         {
                             if (e.isShiftClick())
                             {
-                                amount=16;
+                                amount=LegendaryDailyShop.getInstance().getConfigManager().click_shift_left_amount;
                             }
                         }
                         if (e.isRightClick())
                         {
                             if (e.isShiftClick())
                             {
-                                if (shop.getType().get(uuid).equals(ProductType.BUY))
-                                {
-                                    amount=canBuyMax(shopData.getPrice().get(uuid),shop.getCurrency().get(uuid),p);
-                                }
-                                else {
-                                    amount= ItemUtils.hasItem(shop.getItems().get(uuid),p);
-                                }
+                                amount = LegendaryDailyShop.getInstance().getConfigManager().click_shift_right_amount;
                             }
                             else {
-                                amount=64;
+                                amount=LegendaryDailyShop.getInstance().getConfigManager().click_right_amount;
+                            }
+                        }
+                        if (amount == -1){
+                            if (shop.getType().get(uuid).equals(ProductType.BUY))
+                            {
+                                amount=canBuyMax(shopData.getPrice().get(uuid),shop.getCurrency().get(uuid),p);
+                            }
+                            else {
+                                amount= ItemUtils.hasItem(shop.getItems().get(uuid),p);
                             }
                         }
                         if (amount == 0)
                         {
                             amount=1;
                         }
+
                         if (shop.getLimitAmount(uuid) > 0) {
                             int limit = shop.getLimitAmount(uuid);
                             int buy=shopData.getBuyAmount(uuid);
@@ -218,7 +233,7 @@ public class ShopMenu implements InventoryHolder {
                                 if (shop.getLimitAmount(uuid) > 0) {
                                     shopData.addBuyAmount(uuid, amount);
                                     data.setShop(shopId,shopData);
-                                    PlayerData.updata(data);
+
                                     //LegendaryDailyShop.getInstance().getDataProvider().saveData(data);
                                 }
                                 Bukkit.getPluginManager().callEvent(new ShopBuyEvent(p,shopId,shop.getRarity().get(uuid),amount));
@@ -248,9 +263,10 @@ public class ShopMenu implements InventoryHolder {
                                 if (shop.getLimitAmount(uuid) > 0) {
                                     shopData.addBuyAmount(uuid, amount);
                                     data.setShop(shopId,shopData);
-                                    PlayerData.updata(data);
+
                                     //LegendaryDailyShop.getInstance().getDataProvider().saveData(data);
                                 }
+
                                 Bukkit.getPluginManager().callEvent(new ShopSellEvent(p,shopId,shop.getRarity().get(uuid),amount));
                                 menu = new ShopMenu(p, shopId);
                                 menu.loadMenu();
@@ -294,7 +310,7 @@ public class ShopMenu implements InventoryHolder {
     }
 
     @Override
-    public @NotNull Inventory getInventory() {
+    public Inventory getInventory() {
         return inv;
     }
 }
